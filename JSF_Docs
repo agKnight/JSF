@@ -1,0 +1,158 @@
+Introduction to JavaServer Faces 2.x (notes taken from https://netbeans.org/kb/docs/web/jsf20-intro.html)
+
+User interface (UI) framework for Java Web Applications.
+
+Purposes --
+
+	- ease the burden of writing and maintaining applications that run on Java Application Server
+
+	ease-of-use --
+
+		- construct  a UI from a set of reusable UI Components
+		- Simplify migration of application data to and from the UI
+		- Manage UI state accross server requests
+		- simple model fir writing client generated events to server-side application code
+		- custom UI components to be easily built and re-used
+
+JSF Framework (notes taken from Java EE 7, Chapter 12 Developing with JavaServer Faces Technology)
+
+	- Managed Beans
+	- write propertied and methods of managed beans
+	- Bean Validation
+
+A typical JavaServer Faces application includes one or more managed beans, each of which can be associated with the components used in a particular page. 
+
+	Concepts --
+		
+		- Create
+		- Configure
+		- Use managed beans in an application
+
+	Create a Managed Bean
+
+		- A managed bean is created with a constructor with no arguments, a set of properties, and a set of methods that perform functions for a 			  component. Each of the manaed bean properties can be bound to one of the following:
+			
+			- A component value
+			- A component instance
+			- A converter instance
+			- a listener instance
+			- a validator instance
+
+	Common functions that a managed bean methods perform include:
+		
+		- Validation of a components data
+		- event handling fired by a component
+		- perform processing to determine the next page to which the application must navigate
+
+	As with all JavaBeans components, a property consists of a private data field and a set of accessor methods, as shown by this code:
+		
+		private Integer userNumber = null;
+		...
+		public void setUserNumber(Integer user_number){
+			userNumber = user_number;
+		}	
+		public Integer getUserNumber(){
+			return userNumber;
+		}
+
+	When bound to a component's value, a bean property can be any of the basic primitive and numeric types or any Java object for which the        	    application has access to an appropriate converter. 
+	
+To bind componen values and objects to managed bean properties or to reference managed bean methods from component tags, page authors use the Expression Language syntax.
+
+	Overview of the EL
+		
+		- The El allows page author to use simple expressions to dynamically access data from JavaBeans components.
+		- <c:if test="${sessionScope.cart.numberOfItems > 0}">
+		    ...
+		  </c:if>
+
+		The EL provides a way to use simpleexpressions to perform the following tasks:
+
+			- Dynamically read application data stored in JavaBeans components, various data structures, and implicit objects
+			- Dynmaically write data, such as user input into forms, to JavaBeans components
+			- Invoke arbitrary static and public methods
+			- Dynamically perform arithmetic, bolean, and string operations
+			- Dynamically construct collection objects and persform operations on collections
+
+Usin the EL to reference Managed Beans
+
+The following features the EL offers:
+	
+	- Deferred evaluation of expressions
+	- The ability to use a value expression to both read and write data
+	- Method expressions
+
+Deferred evaluation is important becase the HveServer Faces lifecycle is split into several phases in which component event handling, data conversion and validation, and data propogaton to external objects are all performed in an orderly fashion. The implementation must be able to delay the evalution of the expressions until the properphase of the the life cyclehas been reached. therefore, the implementation's tag attributes always use the deferred-evaluation syntax, which is istinguished by the #{} delimiter.
+
+To store external data in external objects, almost all JavaServer Faces tag attributes use value expressions, which are expressions that allow both getting and setting data on external objects.
+
+example
+
+<h:inputText id="inputGuess"
+	value="#{userNumberBean.userNumber}"
+	required="true" size="3"
+	disabled="#{userNumberBean.number eq userNumberBean.userNumber ...}"
+	validator="#{userNumberBean.validateNumberRange}">
+</h:inputText>
+
+This tag binds the inputGuess components's value to the UserNmberBean.userNumber managed bean property by using an Ivalue expression. The tag uses a method expression to refer to the UserNumberBean.validateNumberRange method, which performs validation of the component's local value. The local value is whatever the user types into the field corresponding to this tag. This method is invoked when te expression is evaluated.
+
+Nearly all JSF tag attributes accept value expressions.
+
+Another use of value expressions is to bind a component instance to a managed bean property. A page author does this by referenceing the property from the biding attribute:
+
+<h:outputLabel for="fanClub"
+	       rendered="false"
+	       binding="#{cashierBean.specialOfferText}">
+	       value="#{bundle.DukeFanClub}"/>
+</h:outputLabel>
+
+Writing Bean Properties
+
+A managed bean property can be bound to one of the following:
+
+	- A component value
+	- A component instance
+	- A converter implementation
+	- A listener implementation
+	- a validator implementation
+
+The components tag binds the component's value to a managed bean proerty by using its value attribute and binds the component's instance to a managed bea property by using its binding attribute. Likewise, all the converteter, listener, and validator tags use their binding attributes to bind their associated implementations to managed bean properties.
+
+To bind a component's value to a mnagedbean property, the type of the property must match the type of component.
+
+Similarly, to a bind a convertor, listener, or validator implemenetation to a managed bean property, the property must accept nd return the same type of convertor,listenerm or validator object.
+
+Writing Bean Methods
+
+MEthods of managed bean can perform several application specific functions for components on the page.
+These fucntions include:
+
+	- Performing processing associated with navigation
+	- Handling action events
+	- Performing validation on thecomponetn's value
+	- Handling value-change events
+
+By using a managed bean to perform  these functions, you eliminate the need to implement the javax.faces.validator.Validator interface to handle the validation or one of the listerner interfaces to handle events. Also, buusing a managed bean instead o a Validator implementation to perform validation, you eliminate the need to create a custom tag for the validator implementation.
+
+it is good practice to include these methods in the same managed bean that defines the properties for the components referencing these methods. The reason for doing so is that the methods might need to access the compinent's data to determine how to handle theevent or to perform the validation associated with the component.
+
+An action method, a managed bean method that handles navigation processing, must be a public method with no arguments that takes no parameters and returns an object, which isthe logical outcome that the navigation system uses to determine the page to display next. This method is referenced sing the components tag's action attribute.
+
+
+To create a new JSF Web Application in NetBeans 8.0
+
+Select New Project (ctrl+shift+n)
+Select Java Web
+Select Web Application
+Name Application (example JSF.Test.agKnight)
+Choose project path
+choose Glassfish Server Version (4.0)
+choose Java EE Version (Java EE 7 Web)
+Choose JavaServer Faces FrameWorks
+
+start coding...
+
+
+		
+		
